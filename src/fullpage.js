@@ -64,6 +64,8 @@
     var SECTION_NAV_TOOLTIP = 'fp-tooltip';
     var SECTION_NAV_TOOLTIP_SEL = '.' + SECTION_NAV_TOOLTIP;
     var SHOW_ACTIVE_TOOLTIP = 'fp-show-active';
+    var SECTION_NAV_MOBILE_SEL = '.fp-nav-mobile';
+    var SECTION_NAV_MOBILE_TRIGGER_SEL = '.fp-nav-mobile-trigger';
 
     // slide
     var SLIDE_DEFAULT_SEL = '.slide';
@@ -90,6 +92,8 @@
     var SLIDES_NEXT_SEL = '.' + SLIDES_NEXT;
     var SLIDES_ARROW_NEXT = SLIDES_ARROW + ' ' + SLIDES_NEXT;
     var SLIDES_ARROW_NEXT_SEL = SLIDES_ARROW_SEL + SLIDES_NEXT_SEL;
+
+    var event_throttle_flag = false;
 
     function initialise(containerSelector, options) {
         var isOK = options && new RegExp('([\\d\\w]{8}-){3}[\\d\\w]{8}|^(?=.*?[A-Y])(?=.*?[a-y])(?=.*?[0-8])(?=.*?[#?!@$%^&*-]).{8,}$').test(options['li' + 'cen' + 'seK' + 'e' + 'y']) || document.domain.indexOf('al' + 'varotri' + 'go' + '.' + 'com') > -1;
@@ -725,10 +729,18 @@
         }
 
         function delegatedEvents(e) {
+            if (event_throttle_flag) { 
+                return 
+            }
             var target = e.target;
-
-            if (target && closest(target, SECTION_NAV_SEL + ' a')) {
+            if (target && matches(target, SECTION_NAV_MOBILE_TRIGGER_SEL)) {
+                mobileNavTriggerHandler.call(target, e);
+            } else if (matches(target, SECTION_NAV_MOBILE_SEL)) {
+                mobileNavClickHandler.call(target, e);
+            }
+            else if (closest(target, SECTION_NAV_SEL + ' a')) {
                 sectionBulletHandler.call(target, e);
+                closeMobileNav.call(target);
             }
             else if (matches(target, SECTION_NAV_TOOLTIP_SEL)) {
                 tooltipTextHandler.call(target);
@@ -742,6 +754,10 @@
             else if (closest(target, options.menu + ' [data-menuanchor]')) {
                 menuItemsHandler.call(target, e);
             }
+            event_throttle_flag = true;
+            setTimeout(function() {
+                event_throttle_flag = false;
+            }, 500);
         }
 
         function forMouseLeaveOrTouch(eventName, allowScrolling) {
@@ -1057,13 +1073,36 @@
         * Creates a vertical navigation bar.
         */
         function addVerticalNavigation() {
+
+            // if there are no markers, skip
+            var markerPresent = false;
+            for (var i = 0; i < $(SECTION_SEL).length; i++) {
+                if ($(SECTION_SEL)[i].dataset.tooltip) {
+                    markerPresent = true;
+                }
+            }
+            if (!markerPresent) {
+                console.log('No navigation markers present on the page. Navigation will not be added.')
+                return;
+            }
+
             var navigation = document.createElement('div');
             navigation.setAttribute('id', SECTION_NAV);
+
+            var mobileTrigger = document.createElement('div')
+            mobileTrigger.classList.add('fp-nav-mobile-trigger');
+
+            navigation.appendChild(mobileTrigger);
+
+            var mobileNavigation = document.createElement('div');
+            mobileNavigation.classList.add('fp-nav-mobile');
 
             var divUl = document.createElement('ul');
             navigation.appendChild(divUl);
 
-            appendTo(navigation, $body);
+            appendTo(navigation, $body.querySelector('main'));
+            appendTo(mobileNavigation, $body.querySelector('main'));
+
             var nav = $(SECTION_NAV_SEL)[0];
 
             addClass(nav, 'fp-' + options.navigationPosition);
@@ -2377,13 +2416,24 @@
             controlPressed = false;
         }
 
+        function mobileNavTriggerHandler(e) {
+            document.querySelector(SECTION_NAV_SEL).classList.add('open');
+        }
+
+        function mobileNavClickHandler() {
+            closeMobileNav.call(null);
+        }
+
+        function closeMobileNav() {
+            document.querySelector(SECTION_NAV_SEL).classList.remove('open');
+        }
+
         //Scrolls to the section when clicking the navigation bullet
         function sectionBulletHandler(e) {
             preventDefault(e);
 
             /*jshint validthis:true */
-            var indexBullet = index(closest(this, SECTION_NAV_SEL + ' li'));
-            indexBullet = closest(this, SECTION_NAV_SEL + ' li').dataset.index;
+            var indexBullet = closest(this, SECTION_NAV_SEL + ' li').dataset.index;
             scrollPage($(SECTION_SEL)[indexBullet]);
         }
 
@@ -2729,9 +2779,10 @@
         * Activating the vertical navigation bullets according to the given slide name.
         */
         function activateNavDots(name, sectionIndex) {
+            console.log('Console output -  hallo ralf')
             if (options.navigation && $(SECTION_NAV_SEL)[0] != null) {
                 removeClass($(ACTIVE_SEL, $(SECTION_NAV_SEL)[0]), ACTIVE);
-                if (name) {
+                if (name && $('a[href="#' + name + '"]', $(SECTION_NAV_SEL)[0]).length > 0) {
                     addClass($('a[href="#' + name + '"]', $(SECTION_NAV_SEL)[0]), ACTIVE);
                 } else {
                     var sections = $('li', $(SECTION_NAV_SEL)[0]);

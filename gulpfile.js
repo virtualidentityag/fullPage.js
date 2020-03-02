@@ -3,6 +3,7 @@ var rename = require('gulp-rename');
 var sourcemaps = require('gulp-sourcemaps');
 var uglify = require('gulp-uglify');
 var minifyCss = require('gulp-clean-css');
+var gutil = require('gulp-util')
 
 gulp.task('css', function(done) {
     gulp.src('./src/fullpage.css')
@@ -28,6 +29,7 @@ gulp.task('js', function(done) {
                 comments: 'some'
             }
         }))
+        .on('error', function (err) { gutil.log(gutil.colors.red('[Error]'), err.toString()); })
         .pipe(rename({suffix: '.min'}))
         .pipe(sourcemaps.write('.'))
         .pipe(gulp.dest('./dist'));
@@ -67,5 +69,9 @@ gulp.task('extensions', function(done) {
         .pipe(gulp.dest('./dist'));
         done();
 });
+
+gulp.task('watch:js', function(done) {
+    gulp.watch('./src/fullpage.js', gulp.parallel('js'));
+})
 
 gulp.task('default', gulp.parallel('css', 'js'));
