@@ -2418,6 +2418,7 @@
 
         function mobileNavTriggerHandler(e) {
             document.querySelector(SECTION_NAV_SEL).classList.add('open');
+            trigger(document, 'fp.navopen');
         }
 
         function mobileNavClickHandler() {
@@ -2426,6 +2427,7 @@
 
         function closeMobileNav() {
             document.querySelector(SECTION_NAV_SEL).classList.remove('open');
+            trigger(document, 'fp.navclosed');
         }
 
         //Scrolls to the section when clicking the navigation bullet
