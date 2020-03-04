@@ -122,6 +122,7 @@
             slidesNavPosition: 'bottom',
             scrollBar: false,
             hybrid: false,
+            caption: '',
 
             //scrolling
             css3: true,
@@ -1091,8 +1092,16 @@
 
             var mobileTrigger = document.createElement('div')
             mobileTrigger.classList.add('fp-nav-mobile-trigger');
-
+            
             navigation.appendChild(mobileTrigger);
+
+            if(options.caption){
+                var caption = document.createElement('div')
+                caption.classList.add('fp-nav-caption');
+                caption.innerHTML = options.caption;
+    
+                navigation.appendChild(caption);
+            }
 
             var mobileNavigation = document.createElement('div');
             mobileNavigation.classList.add('fp-nav-mobile');
