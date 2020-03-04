@@ -2781,7 +2781,6 @@
         * Activating the vertical navigation bullets according to the given slide name.
         */
         function activateNavDots(name, sectionIndex) {
-            console.log('Console output -  hallo ralf')
             if (options.navigation && $(SECTION_NAV_SEL)[0] != null) {
                 removeClass($(ACTIVE_SEL, $(SECTION_NAV_SEL)[0]), ACTIVE);
                 if (name && $('a[href="#' + name + '"]', $(SECTION_NAV_SEL)[0]).length > 0) {
