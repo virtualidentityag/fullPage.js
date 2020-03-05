@@ -739,9 +739,9 @@
             } else if (matches(target, SECTION_NAV_MOBILE_SEL)) {
                 mobileNavClickHandler.call(target, e);
             }
-            else if (closest(target, SECTION_NAV_SEL + ' a')) {
-                sectionBulletHandler.call(target, e);
+            else if (closest(target, SECTION_NAV_SEL + ' a') || closest(target, SECTION_NAV_SEL + ' ' + SECTION_NAV_TOOLTIP_SEL)) {
                 closeMobileNav.call(target);
+                sectionBulletHandler.call(target, e);
             }
             else if (matches(target, SECTION_NAV_TOOLTIP_SEL)) {
                 tooltipTextHandler.call(target);
@@ -1098,19 +1098,38 @@
             if(options.caption){
                 var caption = document.createElement('div')
                 caption.classList.add('fp-nav-caption');
-                caption.innerHTML = options.caption;
-    
+                var captionInner = document.createElement('div');
+                captionInner.classList.add('fp-nav-caption__inner');
+                var elementToRotate = document.createElement('div');
+                elementToRotate.classList.add('fp-nav-caption__rotate-element');
+                elementToRotate.innerHTML = options.caption;
+                captionInner.appendChild(elementToRotate);
+                caption.appendChild(captionInner);
                 navigation.appendChild(caption);
             }
 
             var mobileNavigation = document.createElement('div');
             mobileNavigation.classList.add('fp-nav-mobile');
 
+            var desktopShadow = document.createElement('div');
+            desktopShadow.classList.add('fp-nav-desktop-shadow');
+
             var divUl = document.createElement('ul');
             navigation.appendChild(divUl);
 
-            appendTo(navigation, $body.querySelector('main'));
-            appendTo(mobileNavigation, $body.querySelector('main'));
+            appendTo(navigation, $body.querySelector('main')); 
+            if ($('.fp-nav-mobile')[0]) {
+                $('.fp-nav-mobile')[0].remove();
+                appendTo(mobileNavigation, $body.querySelector('main'));
+            } else {
+                appendTo(mobileNavigation, $body.querySelector('main'));
+            }
+            if ($('.fp-nav-desktop-shadow')[0]) {
+                $('.fp-nav-desktop-shadow')[0].remove();
+                appendTo(desktopShadow, $body.querySelector('main'));
+            } else {
+                appendTo(desktopShadow, $body.querySelector('main'));
+            }
 
             var nav = $(SECTION_NAV_SEL)[0];
 
@@ -1144,9 +1163,6 @@
                 }
             }
             $('ul', nav)[0].innerHTML = li;
-
-            //centering it vertically
-            css($(SECTION_NAV_SEL), { 'margin-top': '-' + ($(SECTION_NAV_SEL)[0].offsetHeight / 2) + 'px' });
 
             //activating the current active section
 
