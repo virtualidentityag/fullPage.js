@@ -223,10 +223,6 @@ html.fp-enabled,
     height: auto !important;
 }
 
-.fp-nav-caption {
-    transform: rotate(90deg);
-}
-
 /*Only display content to screen readers*/
 .fp-sr-only{
     position: absolute;
