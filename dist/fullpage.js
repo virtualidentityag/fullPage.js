@@ -3644,8 +3644,10 @@
                 else {
                     element.scrollTo(0, val);
                 }
-            } else {
+            }else{
+              if (element.style) {
                 element.style.top = val + 'px';
+              }
             }
         }
 
