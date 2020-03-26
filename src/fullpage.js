@@ -3187,6 +3187,14 @@
             var support = 'onwheel' in document.createElement('div') ? 'wheel' : // Modern browsers support "wheel"
                 document.onmousewheel !== undefined ? 'mousewheel' : // Webkit and IE support at least "mousewheel"
                     'DOMMouseScroll'; // let's assume that remaining browsers are older Firefox
+
+            // IE11 onwheel events create problems with our web component's polyfills
+            // Let's force IE11 to use 'wheel' which works just fine
+            var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+            if (isIE11) {
+              support = 'wheel';
+            }
+
             var passiveEvent = g_supportsPassive ? { passive: false } : false;
 
             if (support == 'DOMMouseScroll') {
