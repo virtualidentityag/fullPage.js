@@ -3192,7 +3192,7 @@
             // Let's force IE11 to use 'wheel' which works just fine
             var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
             if (isIE11) {
-              support = 'wheel';
+                support = 'wheel';
             }
 
             var passiveEvent = g_supportsPassive ? { passive: false } : false;
